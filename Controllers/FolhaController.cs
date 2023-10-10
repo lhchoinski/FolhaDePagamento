@@ -33,14 +33,37 @@ namespace FolhaDePagamento.Controllers
             return Ok("Folha de pagamento criada com sucesso.");
         }
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            // Recupera todas as folhas de pagamento do banco de dados
-            var folhas = _context.Folhas.ToList();
+       [HttpGet]
+public IActionResult Get()
+{
+    // Recupera todas as folhas de pagamento do banco de dados
+    var folhas = _context.Folhas.ToList();
 
-            // Retorna todas as folhas de pagamento atualizadas
-            return Ok(folhas);
-        }
-    }
+    // Calcula os valores para cada folha
+    var folhasCalculadas = folhas.Select(folha => new FolhaCalculada
+    {
+        SalarioBruto = folha.CalcularSalarioBruto(),
+        ImpostoRenda = folha.CalcularIR(),
+        INSS = folha.CalcularINSS(),
+        FGTS = folha.CalcularFGTS(),
+        SalarioLiquido = folha.CalcularSalarioLiquido()
+    }).ToList();
+
+    // Retorna todas as folhas de pagamento com os valores calculados
+    return Ok(folhasCalculadas);
 }
+}
+
+    public class FolhaCalculada
+{
+    public decimal SalarioBruto { get; set; }
+    public decimal ImpostoRenda { get; set; }
+    public decimal INSS { get; set; }
+    public decimal FGTS { get; set; }
+    public decimal SalarioLiquido { get; set; }
+}
+
+}
+
+
+
